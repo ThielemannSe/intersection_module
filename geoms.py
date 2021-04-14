@@ -41,6 +41,19 @@ class Arc2D():
     def getRadius(self):
         return ( 4 * self.height**2 + self.distance()**2 ) / (8 * self.height) 
 
+    def isClockwise(self):
+        cp = self.getCenterpoint()
+        u = self.startpoint.substraction(cp)
+        v = self.endpoint.substraction(cp)
+
+        k = u.x * v.y - u.y * v.x
+
+        if k < 0:
+            return True
+        else:
+            return False
+
+
     def getCenterpoint(self):
         d = self.distance()
         a = d / 2
@@ -76,10 +89,16 @@ class Arc2D():
         
         sample_points = [(self.startpoint.x, self.startpoint.y)]
 
-        for i in range(1, steps):
-            px = cp.x + self.getRadius() * math.sin((t - angle/steps * i))
-            py = cp.y + self.getRadius() * math.cos((t - angle/steps * i))
-            sample_points.append((px, py))
+        if self.isClockwise():
+            for i in range(1, steps):
+                px = cp.x + self.getRadius() * math.sin((t - angle/steps * i))
+                py = cp.y + self.getRadius() * math.cos((t - angle/steps * i))
+                sample_points.append((px, py))
+        else:
+            for i in range(1, steps):
+                px = cp.x + self.getRadius() * math.sin((t + angle/steps * i))
+                py = cp.y + self.getRadius() * math.cos((t + angle/steps * i))
+                sample_points.append((px, py))
 
         sample_points.append((self.endpoint.x, self.endpoint.y))
 

@@ -10,33 +10,15 @@ from geoms import Point2D, Arc2D
 import geopandas as gpd
 from shapely.geometry import LineString
 
-# Testdata represemting the relevant line geometries to be checked for intersections
-df = gpd.GeoDataFrame({
-    'id'      : ['1', '2'],
-    'geom'    : [   LineString([(0,0), (1,0), (1,1), (2,1)]),
-                    LineString([(2,3), (2,4), (3,2), (1,5)])
-                ] 
-})
 
-section_geom    = LineString([(-1,-1), (5, 5)])
-section_id      = 12231
+def intersections(section:Section,  features:GeoDataFrame):
 
-
-"""
-    Checking for type of section (Arc or LineSegment)
-    ---> Arc needs to be sampled before
-"""
-
-
-def intersections(section_geom, section_id, features):
-
-    # Creating empty geodataframe 
-    intersections = gpd.GeoDataFrame({
-    'feature_id'   : [],
-    'section_id'    : [],   
-    'geometry'      : []
-    })
-
+    # Checking for if section is arc or line
+    if section.is_arc:
+        section_geom = Arc2D( Point2d(section.startpoint.x, section.startpoint.y), Point2d(section.endpoint.x, section.endpoint.y), Point2d(section.controlpoint.x, section.controlpoint.y), section.height).sample()
+    else:
+        section_geom = LineString([(self.startpoint.x, self.startpoint.y), (self.endpoint.x, self.endpoint.y)])
+    
     # Checking for intersections
     for index, data in df.iterrows():
         feature = data['geom']
@@ -49,9 +31,4 @@ def intersections(section_geom, section_id, features):
     if not intersections.empty:
         return intersections
     else:
-        return None 
-
-
-
-
-print(intersections(section_geom, section_id, df))
+        return None
